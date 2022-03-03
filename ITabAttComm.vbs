@@ -3,33 +3,42 @@
 Function OnCommand(Nome)
 	On Error Resume Next
 	OnCommand=0
+	'Se il Campo Interattore selezionato corrisponde a quello richiesto
+	if UCASE(Nome) = UCASE("btnCopia") then
+		'Se il seriale ha un valore valido
+		if this.GetValue("TacaCSer") > 0 then
+			'Creazione connessione con Database UP
+			Dim conn
+			Set conn = CreateObject("ADODB.Connection")
+			conn.Open globals.GetEnvironment("DsnAPP"),"grupposga","agsoppurg"
+			
+			'Creazione oggetto comando
+			Dim nIdSdi
+			Dim oCmd
+			Set oCmd = CreateObject("ADODB.Command")
 
-	MsgBox(NomeInterattore & ".OnCommand(" & Nome &  ")" & " " & this.GetValue("TacaCSer"))
-	
-	Dim conn
-	Set conn = CreateObject("ADODB.Connection")
-	conn.Open globals.GetEnvironment("DsnAPP"),"grupposga","agsoppurg"
-	
-	Dim nIdSdi
-	Dim oCmd
-	Set oCmd = CreateObject("ADODB.Command")
+			'Creazione comando con Stored Procedure
+			Set oCmd.ActiveConnection = conn
+			oCmd.CommandType = 4				'Stored Procedures
+			oCmd.CommandText = "ITsp_InsCopiaCommessaAttributi"
 
-	Set oCmd.ActiveConnection = conn
-	oCmd.CommandType = 4				'Stored Procedures
-	oCmd.CommandText = "ITsp_InsCopiaCommessaAttributi"
+			'Specifica parametro di input
+			oCmd.Parameters.Refresh
+			oCmd.Parameters(1).Value = this.GetValue("TacaCSer")
+			
+			'Esecuzione del comando
+			oCmd.Execute()
 
-	oCmd.Parameters.Refresh
+			'Chiusura connessione e comando
+			Set oCmd = Nothing
+			conn.Close
+			Set conn = Nothing
 
-	oCmd.Parameters(1).Value = this.GetValue("TacaCSer")
-	
-	oCmd.Execute()
-
-	Set oCmd = Nothing
-	
-	conn.Close
-	Set conn = Nothing
-
-	Msgbox("La Stored Procedure " & "ITsp_InsCopiaCommessaAttributi" & "รจ stata eseguita correttamente")
+			MsgBox("Commessa copiata con successo!")
+		else
+			MsgBox("Commessa non trovata")
+		end if	
+	end if
 End Function
 
 '----------------------------------------------------------
