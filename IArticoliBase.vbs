@@ -595,7 +595,7 @@ Function cambioTipoArticoloDaOld(SerialeArticolo)
 		rs.MoveFirst()
 		Dim tipoArt
 		tipoArt = rs("TparCTpar")
-		if(StrComp(tipoArt, this.GetValue("codLookupTipoArticolo"), vbTextCompar) <> 0 AND (StrComp(tipoArt, "OLD", vbTextCompar) = 0 OR StrComp(tipoArt, "OLD-R", vbTextCompar) = 0)) then
+		if((StrComp(this.GetValue("codLookupTipoArticolo"), "OLD", vbTextCompar) <> 0 AND StrComp(this.GetValue("codLookupTipoArticolo"), "OLD-R", vbTextCompar) <> 0) AND StrComp(tipoArt, this.GetValue("codLookupTipoArticolo"), vbTextCompar) <> 0 AND (StrComp(tipoArt, "OLD", vbTextCompar) = 0 OR StrComp(tipoArt, "OLD-R", vbTextCompar) = 0)) then
 			Call caricaDataIns(SerialeArticolo)
 		end if
 	end if
@@ -838,5 +838,3 @@ End Function
 '	MsgBox(NomeInterattore & ".OnQueryCommand(" & Nome &  ")")
 
 'End Function
-
-
